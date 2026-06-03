@@ -1,10 +1,13 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "tb-prototype",
+  "displayName": "TB Prototype",
   "version": "0.1.0",
   "description": "Skills de prototypage rapide pour les PMPO Thirdbridge. Génère des prompts Lovable optimisés à partir d'un brief, de screenshots, d'un lien Figma, d'une URL déployée ou d'un repo client.",
   "author": {
     "name": "Thirdbridge"
   },
+  "repository": "https://github.com/jblalonde/tb-prototype",
   "keywords": [
     "prototype",
     "lovable",

@@ -1,62 +1,43 @@
 ---
-name: prototype-component
-description: >
-  Use this skill when the user wants to prototype a single isolated UI
-  component for a client — the same format used in the AI prototyping
-  benchmark. Trigger phrases include "prototype d'un composant",
-  "composant isolé", "teste un composant", "component prototype", "isolated
-  component", "prototype a Button", "prototype a Modal". The skill
-  collects component requirements, ingests client context, and produces
-  a focused Lovable prompt with all variants and states.
-metadata:
-  version: "0.1.0"
-  author: "Thirdbridge"
+description: Prototype a single isolated UI component with all variants and states visible side-by-side. Collects requirements, ingests client context, and outputs a focused Lovable prompt.
+when_to_use: >
+  Use when the user wants to prototype a single isolated component
+  (button, card, form input, modal, navigation, feedback element).
+  Trigger phrases: "prototype d'un composant", "composant isolé", "teste
+  un composant", "component prototype", "isolated component", "prototype
+  a Button", "prototype a Modal". For a full screen use prototype-mobile-
+  screen or prototype-web-screen; for multiple connected screens use
+  prototype-flow.
 ---
 
-# prototype-component
+Format inspiré du benchmark de prototypage IA: un composant isolé, sans contexte de page, pour valider rapidement design system + interactions.
 
-## Quand cette skill se déclenche
+## 1. Confirmer le composant
 
-L'utilisateur (PMPO Thirdbridge) veut prototyper **un seul composant UI** avec toutes ses variantes et états visibles côte à côte. C'est le format exact testé dans le benchmark de prototypage IA: un composant isolé, sans contexte de page, pour valider rapidement design system + interactions.
+Reformuler en une phrase. Ex: « Tu veux un composant de carte produit avec image, titre, prix et bouton CTA, dans plusieurs états. C'est ça? ».
 
-Si l'utilisateur parle d'un écran complet, utiliser `prototype-mobile-screen` ou `prototype-web-screen`. Si c'est plusieurs composants reliés en parcours, utiliser `prototype-flow`.
+## 2. Collecter les specs
 
-## Comportement attendu
+Un seul `AskUserQuestion`:
 
-### Étape 1: Confirmer le composant
+1. **Catégorie** — pills: « Bouton / CTA », « Carte », « Formulaire (input, select, checkbox) », « Modale / Dialog », « Navigation (tabs, menu, breadcrumb) », « Feedback (toast, alert, badge) », « Liste / Item », « Autre (préciser) »
+2. **Variantes** — multiSelect: « Primary », « Secondary », « Tertiary / Ghost », « Destructive », « Avec icône », « Avec image », « Compact », « Large »
+3. **États** — multiSelect: « Default », « Hover », « Active / Pressed », « Focus », « Disabled », « Loading », « Erreur », « Succès »
+4. **Plateforme** — pills: « Web (desktop + tablette) », « Mobile uniquement », « Responsive »
 
-Reformuler en une phrase. Exemple: « Tu veux un composant de carte produit avec image, titre, prix et bouton CTA, dans plusieurs états. C'est ça? ».
+Pour « Autre », demander une description texte libre.
 
-### Étape 2: Collecter les spécifications
+## 3. Ingérer le contexte client
 
-Un seul `AskUserQuestion` avec:
+Même mécanique que les autres skills (screenshots / Figma / URL / repo / aucun).
 
-1. **Catégorie de composant** — pills: « Bouton / CTA », « Carte (card) », « Formulaire (input, select, checkbox) », « Modale / Dialog », « Navigation (tabs, menu, breadcrumb) », « Feedback (toast, alert, badge) », « Liste / Item », « Autre (préciser) »
-2. **Variantes à inclure** — multiSelect: « Primary », « Secondary », « Tertiary / Ghost », « Destructive », « Avec icône », « Avec image », « Compact », « Large »
-3. **États à inclure** — multiSelect: « Default », « Hover », « Active / Pressed », « Focus (visible outline) », « Disabled », « Loading », « Erreur », « Succès »
-4. **Plateforme** — pills: « Web (desktop + tablette) », « Mobile uniquement », « Responsive (les deux) »
-
-Pour « Autre (préciser) », demander à l'utilisateur de décrire en texte libre.
-
-### Étape 3: Ingérer le contexte client
-
-Même mécanique que les autres skills, via `AskUserQuestion` multiSelect:
-
-- Screenshots / images de référence
-- Lien Figma (MCP si connecté)
-- URL site déployé
-- Repo Git local
-- Aucun contexte
-
-Pour un composant, l'extraction se concentre sur:
+Extraction focalisée:
 - 2 à 4 couleurs critiques (primary, accent, neutral text, surface)
-- Famille de typographie body
+- Typographie body
 - Border-radius, ombres, transitions si visibles
-- Spacing / padding pattern (4px, 8px, 16px scale?)
+- Spacing / padding (échelle 4/8/16?)
 
-### Étape 4: Assembler le prompt Lovable
-
-Template:
+## 4. Assembler le prompt Lovable
 
 ```
 Build an isolated UI component prototype.
@@ -71,14 +52,14 @@ variants and states, all displayed on a single showcase page for visual
 review.
 
 VARIANTS
-[Liste de Q2, chaque variante en bullet point. Ex:
+[Liste Q2 en bullets. Ex:
 - Primary (filled)
 - Secondary (outlined)
 - Tertiary (ghost / text only)
 - Destructive (red filled)]
 
 STATES (per variant)
-[Liste de Q3 en bullet:
+[Liste Q3 en bullets:
 - Default
 - Hover
 - Focus (visible 2px outline offset)
@@ -86,10 +67,10 @@ STATES (per variant)
 - Loading (spinner replaces label)]
 
 LAYOUT
-Showcase page with a grid: variants as columns, states as rows. Each
-cell labeled with variant + state name. Padding 24px between cells.
-Light gray background to make whites visible. Sticky header with the
-component name.
+Showcase page with a grid: variants as columns, states as rows. Each cell
+labeled with variant + state name. Padding 24px between cells. Light
+gray background to make whites visible. Sticky header with the component
+name.
 
 PLATFORM
 [Q4 — adapter taille / padding]
@@ -101,21 +82,21 @@ REQUIREMENTS
 - No external deps beyond React and Tailwind
 
 BRAND CONTEXT
-[Bloc de l'étape 3. Fallback: "Neutral modern: slate-900 text, white
-surface, indigo-600 primary, 8px radius, system font."]
+[Bloc étape 3. Fallback: "Neutral modern: slate-900 text, white surface,
+indigo-600 primary, 8px radius, system font."]
 
 DELIVERABLES
-- src/components/[ComponentName].tsx — the component itself
-- src/App.tsx — the showcase page rendering everything
+- src/components/[ComponentName].tsx — le composant
+- src/App.tsx — showcase page rendant tout
 - Lovable share link ready
 ```
 
-### Étape 5: Livrer au PMPO
+## 5. Livrer
 
-Même format de livraison: prompt dans un bloc de code, lien Lovable, instructions.
+Format standard: prompt dans un bloc de code, lien Lovable, instructions.
 
 ## Anti-patterns
 
-- Ne pas mélanger plusieurs composants dans la même skill: un composant = un prompt. Si le PMPO veut un système complet (button + input + card), produire un prompt par composant ou rediriger vers `prototype-web-screen` pour un design system showcase.
-- Toujours montrer toutes les variantes et états côte à côte: c'est le format qui a gagné le benchmark.
-- Prompt final en anglais, max 220 mots.
+- Un composant = un prompt. Pour un système complet (button + input + card), produire un prompt par composant ou basculer vers prototype-web-screen pour un design system showcase.
+- Toujours montrer variantes et états côte à côte (format gagnant du benchmark).
+- Prompt en anglais, max 220 mots.
